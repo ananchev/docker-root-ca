@@ -45,8 +45,12 @@ default_md        = sha256
 name_opt          = ca_default
 cert_opt          = ca_default
 default_days      = 3650
+default_crl_days  = 30   
 preserve          = no
 policy            = policy_strict
+crlnumber         = \$dir/crl/crlnumber
+crl               = \$dir/crl/ca.crl.pem
+crl_extensions    = crl_ext
 
 [ policy_strict ]
 countryName             = match

@@ -58,6 +58,13 @@ Create and initialize index.txt and serial files on the host
 touch ca_data/index.txt
 echo 1000 > ca_data/serial
 ```
+Initialize the crlnumber file that keeps track of CRL versions
+```shell
+echo 1000 > ca_data/crl/crlnumber
+chmod 644 ca_data/crl/crlnumber
+```
+
+
 2. Run the container
 
 Execute from project's root directory and with the .env file ready:
