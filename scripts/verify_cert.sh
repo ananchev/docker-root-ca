@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 CERT_TO_VERIFY=$1
 CA_CERT="/ca/certs/ca.cert.pem"

@@ -47,19 +47,24 @@ docker build -t my-root-ca .
 ```
 
 ## Running the container
-1. Prepare directories
+1. Prepare directories & files
 
 Create directories on the host machine to store CA and client data. Will be mounted as volumes to persist data outside the container.
 ```shell
-mkdir -p ca_data/certs ca_data/private clients_data/certs clients_data/private
+mkdir -p ca_data/certs ca_data/private ca_data/newcerts ca_data/crl clients_data/certs clients_data/private clients_data/requests 
+```
+Create and initialize index.txt and serial files on the host
+```shell
+touch ca_data/index.txt
+echo 1000 > ca_data/serial
 ```
 2. Run the container
 
 Execute from project's root directory and with the .env file ready:
 ```shell
 docker run --rm -it --name my-ca \
-  -v $(pwd)/ca_data:/ca \
-  -v $(pwd)/clients_data:/clients \
+  -v $(pwd)/ca_data:/ca:Z \
+  -v $(pwd)/clients_data:/clients:Z \
   --env-file .env \
   my-root-ca
 ```
@@ -75,7 +80,7 @@ After generated the necessary certificates, the container is intended to be deco
 
 All sensitive data, including the root CA's private key and certificates, and the client certificates, are persisted on the host through mounted volumes. 
 
-## Generating Certificates
+## Managing Certificates
 
 ### Generate Root CA
 The Root CA is automatically generated when the container starts if it doesn't already exist.
@@ -102,6 +107,25 @@ Example for verifying ```client1's``` certificate
 
 #### Output
 * ```/ca/certs/ca.cert.pem: OK```
+
+### Revoke a certificate
+To revoke a specified client certificate and update the certificate revocation list (CRL) use the ``` ``` scriot with the client's certificate name
+```shell
+/scripts/revoke_client_cert.sh client1
+```
+
+#### Output
+* Certificate for ```client1``` has been revoked
+* Certificate Revocation List (CRL) updated at ```/ca/cr/ca.crl.pem```
+
+### Verify CRL
+Verify the CRL to check the revocations:
+```shell
+openssl crl -in /ca/crl/ca.crl.pem -noout -text
+```
+
+#### Output
+The command will display a detailed, human-readable view of the certificate revocation list.
 
 ## Security Considerations
 * Ensure that the ca_data and clients_data directories on the host have strict permissions (```chmod 700```) to prevent unauthorized access

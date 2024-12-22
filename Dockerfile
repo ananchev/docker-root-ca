@@ -5,7 +5,7 @@ FROM alpine:latest
 RUN apk update && apk add --no-cache openssl bash
 
 # Create necessary directories
-RUN mkdir -p /ca/{private,certs,crl,newcerts,requests} /clients/{private,certs,requests}
+RUN mkdir -p /ca/private /ca/certs /ca/crl /ca/newcerts /ca/requests /clients/private /clients/certs /clients/requests
 
 # Set permissions
 RUN chmod 700 /ca/private
